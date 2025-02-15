@@ -1,5 +1,5 @@
 public class Player {
-    public static void main(String[] args) {
+    public static void Player(int points, int ) {
         
     }
 }
