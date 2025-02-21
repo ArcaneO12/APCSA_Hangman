@@ -1,15 +1,12 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Hangman {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         WordProvider wordProvider = new WordProvider();
-        //String str = wordProvider.getWord();
-        String str = "nolan";
-        char[] word = str.toCharArray();
-        char[] display = str.toCharArray();
-        Arrays.fill(display, '_');
+        //String word = wordProvider.getWord();
+        String word = "nolan";
+        Display display = new Display(word);
 
         System.out.println("*HANGMAN*\n");
         System.out.print("Player 1, input name: ");
@@ -17,40 +14,37 @@ public class Hangman {
         System.out.print("Player 2, input name: ");
         Player p1 = new Player(sc.nextLine());
 
-        System.out.println("Your word is " + str.length() + " letters long.\n");
-        System.out.println(display);
+        System.out.println("Your word is " + word.length() + " letters long.\n");
+        System.out.println(display.getDisplayStr());
         
-        for (int turn = 0; !Arrays.equals(word, display); turn++) {
+        for (int turn = 0; !display.isSolved(); turn++) {
             Player player = (turn % 2 == 0) ? p0 : p1;
             System.out.print(player.getName() + "\'s guess: ");
-            String guess = sc.nextLine();
+            String guess = sc.nextLine().toLowerCase();
+            int change = 0;
             if (guess.length() == 1) {
                 char chGuess = guess.charAt(0);
-                int times = 0;
-                for (int i = 0; i < word.length; i++) {
-                    if (chGuess == str.charAt(i)) {
-                        display[i] = chGuess;
-                        times++;
-                        player.changeScore((int) (Math.random() * 100 * times));
-                    }
-                }
-            } else if (guess.equals(str)) {
-                display = word;
-                p1.changeScore((int) (Math.random() * 40 * str.length()));
+                int times = display.changeDisplay(chGuess);
+                change = (int) ((Math.random() + 9) * 10 * times);
+                player.changeScore(change);
+            } else if (guess.equals(word)) {
+                display.revealDisplay();
+                change = (int) ((Math.random() + 9) * 4 * word.length());
+                p1.changeScore(change);
             }
-            System.out.println(display);
+            System.out.println(display.getDisplayStr() + " (" + player.getName() + " gained " + change + " points!)");
         }
 
-        System.out.println("\nThe word was \"" + str + "\"!");
+        System.out.println("\nThe word was \"" + word + "\"!");
         System.out.println(p0.getName() + "'s score: " + p0.getScore() + ".");
         System.out.println(p1.getName() + "'s score: " + p1.getScore() + ".");
         if (p0.getScore() > p1.getScore()) {
-            System.out.println(p0.getName() + " wins!");
+            System.out.println(p0.getName() + " won!");
+        } else if (p0.getScore() < p1.getScore()) {
+            System.out.println(p1.getName() + " won!");
         } else {
-            System.out.println(p1.getName() + " wins!");
+            System.out.println(p0.getName() + " and " + p1.getName() + " tied!");
         }
-
-        // Main switches between players with the Player method, who guess with the
-        // Guess method.
+        sc.close();
     }
 }
