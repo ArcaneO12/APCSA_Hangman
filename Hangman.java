@@ -4,8 +4,7 @@ public class Hangman {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         WordProvider wordProvider = new WordProvider();
-        //String word = wordProvider.getWord();
-        String word = "nolan";
+        String word = wordProvider.getWord();
         Display display = new Display(word);
 
         System.out.println("*HANGMAN*\n");
